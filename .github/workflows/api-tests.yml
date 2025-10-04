@@ -1,0 +1,45 @@
+name: Run API Tests
+
+# Trigger workflow on push or pull request
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository files
+      - uses: actions/checkout@v3
+
+      # Step 2: Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Step 3: Install Newman and HTML reporter
+      - name: Install Newman & HTML Reporter
+        run: |
+          npm install -g newman
+          npm install -g newman-reporter-html
+
+      # Step 4: Run Postman collection
+      - name: Run API Tests
+        run: |
+          newman run postman/Testing.postman_collection.json \
+          -e postman/dev_environment.json \
+          -r cli,html \
+          --reporter-html-export newman-report.html
+
+      # Step 5: Upload HTML report as artifact
+      - name: Upload Newman Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: newman-report
+          path: newman-report.html
