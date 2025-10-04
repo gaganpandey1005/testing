@@ -33,7 +33,6 @@ jobs:
       - name: Run API Tests
         run: |
           newman run postman/Testing.postman_collection.json \
-          -e postman/dev_environment.json \
           -r cli,html \
           --reporter-html-export newman-report.html
 
